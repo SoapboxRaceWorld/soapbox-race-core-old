@@ -1,11 +1,17 @@
 package com.soapboxrace.core.bo;
 
+import java.util.List;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import com.soapboxrace.core.dao.FriendListDAO;
 import com.soapboxrace.core.dao.PersonaDAO;
+import com.soapboxrace.core.jpa.FriendListEntity;
 import com.soapboxrace.core.jpa.PersonaEntity;
+import com.soapboxrace.jaxb.http.ArrayOfFriendPersona;
 import com.soapboxrace.jaxb.http.FriendPersona;
+import com.soapboxrace.jaxb.http.PersonaFriendsList;
 import com.soapboxrace.jaxb.xmpp.XMPP_FriendPersonaType;
 import com.soapboxrace.jaxb.xmpp.XMPP_FriendResultType;
 import com.soapboxrace.jaxb.xmpp.XMPP_ResponseTypeFriendResult;
@@ -18,7 +24,37 @@ public class FriendBO {
 	private PersonaDAO personaDao;
 	
 	@EJB
+	private FriendListDAO friendListDao;
+	
+	@EJB
 	private DriverPersonaBO personaBO;
+	
+	public PersonaFriendsList getFriendListFromUserId(Long userId) {
+		ArrayOfFriendPersona arrayOfFriendPersona = new ArrayOfFriendPersona();
+		
+		List<FriendListEntity> friendList = friendListDao.findByOwnerId(userId);
+		for(FriendListEntity entity : friendList) {
+			PersonaEntity personaEntity = personaDao.findById(entity.getPersonaId());
+			
+			if(personaEntity.getPersonaId() != null) {
+				FriendPersona friendPersona = new FriendPersona();
+				friendPersona.setIconIndex(personaEntity.getIconIndex());
+				friendPersona.setLevel(personaEntity.getLevel());
+				friendPersona.setName(personaEntity.getName());
+				friendPersona.setOriginalName(personaEntity.getName());
+				friendPersona.setPersonaId(personaEntity.getPersonaId());
+				friendPersona.setPresence(1);
+				friendPersona.setSocialNetwork(1);
+				friendPersona.setUserId(personaEntity.getUser().getId());
+				
+				arrayOfFriendPersona.getFriendPersona().add(friendPersona);
+			}
+		}
+		
+		PersonaFriendsList personaFriendsList = new PersonaFriendsList();
+		personaFriendsList.setFriendPersona(arrayOfFriendPersona);
+		return personaFriendsList;
+	}
 
 	public void sendFriendRequest(Long personaId, String displayName, String reqMessage) {
 		PersonaEntity personaEntity = personaDao.findById(personaId);
