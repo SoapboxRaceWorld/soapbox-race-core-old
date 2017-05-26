@@ -1,6 +1,7 @@
 package com.soapboxrace.xmpp.openfire;
 
 import com.soapboxrace.jaxb.xmpp.XMPP_FriendPersonaType;
+import com.soapboxrace.jaxb.xmpp.XMPP_ResponseTypeFriendResult;
 
 public class XmppFriend {
 
@@ -13,6 +14,10 @@ public class XmppFriend {
 
 	public void sendFriendRequest(XMPP_FriendPersonaType friendPersonaType) {
 		openFireSoapBoxCli.send(friendPersonaType, personaId);
+	}
+	
+	public void sendResponseFriendRequest(XMPP_ResponseTypeFriendResult responseTypeFriendResult) {
+		openFireSoapBoxCli.send(responseTypeFriendResult, personaId);
 	}
 
 }
