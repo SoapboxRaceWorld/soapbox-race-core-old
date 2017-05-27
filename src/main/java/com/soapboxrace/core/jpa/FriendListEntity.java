@@ -17,42 +17,33 @@ public class FriendListEntity {
 
 	@Id
 	@Column(name = "ID", nullable = false)
-	private long id;
-
-	private long userOwnerId;
-	private long personaId;
-	private long userId;
+	private Long userOwnerId;
+	
+	private Long personaId;
+	private Long userId;
 	private Boolean  isAccepted;
 
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long value) {
-		this.id = value;
-	}
-
-	public long getUserOwnerId() {
+	public Long getUserOwnerId() {
 		return userOwnerId;
 	}
 
-	public void setUserOwnerId(long value) {
+	public void setUserOwnerId(Long value) {
 		this.userOwnerId = value;
 	}
 
-    public long getPersonaId() {
+    public Long getPersonaId() {
         return personaId;
     }
 
-    public void setPersonaId(long value) {
+    public void setPersonaId(Long value) {
         this.personaId = value;
     }
     
-    public long getUserId() {
+    public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(long value) {
+	public void setUserId(Long value) {
 		this.userId = value;
 	}
 	
