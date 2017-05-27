@@ -10,7 +10,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "FRIEND_LIST")
 @NamedQueries({ //
-	@NamedQuery(name = "FriendListEntity.findByOwnerId", query = "SELECT obj FROM FriendListEntity obj WHERE obj.userOwnerId = :userOwnerId") //
+	@NamedQuery(name = "FriendListEntity.findByOwnerId", query = "SELECT obj FROM FriendListEntity obj WHERE obj.userOwnerId = :userOwnerId"), //
+	@NamedQuery(name = "FriendListEntity.findByOwnerIdAndFriendPersona", query = "SELECT obj FROM FriendListEntity obj WHERE obj.userOwnerId = :userOwnerId AND obj.personaId = :personaId") //
 })
 public class FriendListEntity {
 
@@ -21,6 +22,7 @@ public class FriendListEntity {
 	private long userOwnerId;
 	private long personaId;
 	private long userId;
+	private Boolean  isAccepted;
 
 	public long getId() {
 		return id;
@@ -52,6 +54,14 @@ public class FriendListEntity {
 
 	public void setUserId(long value) {
 		this.userId = value;
+	}
+	
+	public Boolean getIsAccepted() {
+		return isAccepted;
+	}
+	
+	public void setIsAccepted(Boolean value) {
+		this.isAccepted = value;
 	}
 
 }

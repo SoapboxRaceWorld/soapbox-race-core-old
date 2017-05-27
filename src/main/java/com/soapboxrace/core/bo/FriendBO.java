@@ -35,15 +35,14 @@ public class FriendBO {
 		List<FriendListEntity> friendList = friendListDao.findByOwnerId(userId);
 		for(FriendListEntity entity : friendList) {
 			PersonaEntity personaEntity = personaDao.findById(entity.getPersonaId());
-			
-			if(personaEntity.getPersonaId() != null) {
+			if(!personaEntity.getPersonaId().equals(0L)) {
 				FriendPersona friendPersona = new FriendPersona();
 				friendPersona.setIconIndex(personaEntity.getIconIndex());
 				friendPersona.setLevel(personaEntity.getLevel());
 				friendPersona.setName(personaEntity.getName());
 				friendPersona.setOriginalName(personaEntity.getName());
 				friendPersona.setPersonaId(personaEntity.getPersonaId());
-				friendPersona.setPresence(1);
+				friendPersona.setPresence(entity.getIsAccepted() ? personaBO.getPersonaPresenceByName(personaEntity.getName()).getPresence() : 3 );
 				friendPersona.setSocialNetwork(1);
 				friendPersona.setUserId(personaEntity.getUser().getId());
 				
@@ -59,8 +58,7 @@ public class FriendBO {
 	public void sendFriendRequest(Long personaId, String displayName, String reqMessage) {
 		PersonaEntity personaEntity = personaDao.findById(personaId);
 		PersonaEntity personaInvite = personaDao.findByName(displayName);
-		
-		if(personaEntity != null && personaInvite != null) {
+		if(!personaEntity.getPersonaId().equals(0L) && !personaInvite.getPersonaId().equals(0L)) {
 			XMPP_FriendPersonaType friendPersonaType = new XMPP_FriendPersonaType();
 			friendPersonaType.setIconIndex(personaEntity.getIconIndex());
 			friendPersonaType.setLevel(personaEntity.getLevel());
@@ -72,11 +70,21 @@ public class FriendBO {
 			
 			XmppFriend xmppFriend = new XmppFriend(personaInvite.getPersonaId());
 			xmppFriend.sendFriendRequest(friendPersonaType);
+			
+			// Insert 2 
+			for(int i = 0; i < 2; i++) {
+				FriendListEntity friendListEntity = new FriendListEntity();
+				friendListEntity.setUserOwnerId(i == 1 ? personaEntity.getUser().getId() : personaInvite.getUser().getId());
+				friendListEntity.setUserId(i == 1 ? personaInvite.getUser().getId() : personaEntity.getUser().getId());
+				friendListEntity.setPersonaId(i == 1 ? personaInvite.getPersonaId() : personaEntity.getPersonaId());
+				friendListEntity.setIsAccepted(false);
+				friendListDao.insert(friendListEntity);
+			}
 		}
 	}
 	
 	public void sendResponseFriendRequest(Long personaId, Long friendPersonaId, int resolution) {
-		// Send all info to friendPersonaId
+		/*// Send all info to friendPersonaId
 		FriendPersona friendPersona = new FriendPersona();
 		friendPersona.setPersonaId(personaId);
 		
@@ -96,7 +104,32 @@ public class FriendBO {
 		friendPersonaType.setPresence(1);
 		
 		XmppFriend xmppFriend2 = new XmppFriend(personaId);
-		xmppFriend2.sendFriendRequest(friendPersonaType);
+		xmppFriend2.sendFriendRequest(friendPersonaType);*/
+		if(resolution == 1) {
+			PersonaEntity personaEntity = personaDao.findById(personaId);
+			PersonaEntity personaInvite = personaDao.findById(friendPersonaId);
+			if(!personaEntity.getPersonaId().equals(0L) && !personaInvite.getPersonaId().equals(0L)) {
+				FriendListEntity friendListEntity = friendListDao.findByOwnerIdAndFriendPersona(personaEntity.getUser().getId(), friendPersonaId);
+				friendListEntity.setIsAccepted(true);
+				friendListDao.update(friendListEntity);
+				
+				FriendListEntity friendListEntityInvite = friendListDao.findByOwnerIdAndFriendPersona(personaInvite.getUser().getId(), personaId);
+				friendListEntityInvite.setIsAccepted(true);
+				friendListDao.update(friendListEntityInvite);
+				
+				XMPP_FriendPersonaType friendPersonaType = new XMPP_FriendPersonaType();
+				friendPersonaType.setIconIndex(personaInvite.getIconIndex());
+				friendPersonaType.setLevel(personaInvite.getLevel());
+				friendPersonaType.setName(personaInvite.getName());
+				friendPersonaType.setOriginalName(personaInvite.getName());
+				friendPersonaType.setPersonaId(personaInvite.getPersonaId());
+				friendPersonaType.setPresence(1);
+				friendPersonaType.setUserId(personaInvite.getUser().getId());
+				
+				XmppFriend xmppFriend = new XmppFriend(personaEntity.getPersonaId());
+				xmppFriend.sendFriendRequest(friendPersonaType);
+			}
+		}
 	}
 
 }
