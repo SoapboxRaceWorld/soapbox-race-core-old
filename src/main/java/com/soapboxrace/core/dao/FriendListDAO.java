@@ -28,13 +28,7 @@ public class FriendListDAO extends BaseDAO<FriendListEntity> {
 		TypedQuery<FriendListEntity> query = entityManager.createNamedQuery("FriendListEntity.findByOwnerIdAndFriendPersona", FriendListEntity.class);
 		query.setParameter("userOwnerId", ownerId);
 		query.setParameter("personaId", friendPersona);
-		
-		List<FriendListEntity> resultList = query.getResultList();
-		if(resultList != null && !resultList.isEmpty()){
-			return resultList.get(0);
-		}
-		
-		return null;
+		return ( query.getResultList() != null && !query.getResultList().isEmpty() ) ? query.getResultList().get(0) : null;
 	}
 
 }

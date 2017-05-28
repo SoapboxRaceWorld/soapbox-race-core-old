@@ -153,7 +153,6 @@ public class FriendBO {
 		
 		FriendListEntity friendListEntity01 = friendListDao.findByOwnerIdAndFriendPersona(personaEntity.getUser().getId(), friendPersonaId);
 		FriendListEntity friendListEntity02 = friendListDao.findByOwnerIdAndFriendPersona(personaInvite.getUser().getId(), personaId);
-		
 		if(friendListEntity01 == null || friendListEntity02 == null)
 			return;
 			
