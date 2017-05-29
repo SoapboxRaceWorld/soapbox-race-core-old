@@ -99,7 +99,7 @@ public class FriendBO {
 	}
 	
 	public void sendResponseFriendRequest(Long personaId, Long friendPersonaId, int resolution) {
-		// Execute some DB thing
+		// Execute some DB things
 		PersonaEntity personaEntity = personaDao.findById(personaId);
 		PersonaEntity personaInvite = personaDao.findById(friendPersonaId);
 		if(personaEntity.getPersonaId() == 0L || personaInvite.getPersonaId() == 0L)
