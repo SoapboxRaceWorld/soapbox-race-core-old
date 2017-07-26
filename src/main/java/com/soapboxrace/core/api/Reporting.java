@@ -2,6 +2,7 @@ package com.soapboxrace.core.api;
 
 import java.io.InputStream;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -80,7 +81,9 @@ public class Reporting {
 	@POST
 	@Path("/ModuleInformation")
 	@Produces(MediaType.APPLICATION_JSON)
-	public ModuleEvaluation moduleInformation(InputStream is) {
+	@Consumes(MediaType.APPLICATION_JSON)
+	public ModuleEvaluation moduleInformation(ModuleInformation moduleInfo) {
+		System.out.println(moduleInfo.getModuleInfo().getName());
 		ModuleEvaluation moduleEvaluation = new ModuleEvaluation();
 		return moduleEvaluation;
 	}
