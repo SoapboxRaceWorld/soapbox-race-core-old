@@ -274,6 +274,7 @@ CREATE TABLE IF NOT EXISTS
         premium bit NOT NULL DEFAULT FALSE,
         relayCryptoTicket VARCHAR(255) COLLATE utf8_unicode_ci,
         userId bigint,
+        isAdmin bit NOT NULL DEFAULT FALSE,
         PRIMARY KEY (ID)
     )
     ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -284,6 +285,8 @@ CREATE TABLE IF NOT EXISTS
         EMAIL VARCHAR(255) COLLATE utf8_unicode_ci,
         PASSWORD VARCHAR(50) COLLATE utf8_unicode_ci,
         premium bit NOT NULL DEFAULT FALSE,
+        isAdmin bit NOT NULL DEFAULT FALSE,
+        isBan bit NOT NULL DEFAULT FALSE,
         PRIMARY KEY (ID)
     )
     ENGINE=InnoDB DEFAULT CHARSET=utf8;

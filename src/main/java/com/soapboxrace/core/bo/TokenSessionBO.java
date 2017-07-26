@@ -45,14 +45,16 @@ public class TokenSessionBO {
 	}
 
 	public String createToken(Long userId) {
-		TokenSessionEntity tokenSessionEntity = new TokenSessionEntity();
 		Date expirationDate = getMinutes(15);
-		tokenSessionEntity.setExpirationDate(expirationDate);
 		String randomUUID = UUIDGen.getRandomUUID();
+		UserEntity userEntity = userDAO.findById(userId);
+		
+		TokenSessionEntity tokenSessionEntity = new TokenSessionEntity();
+		tokenSessionEntity.setExpirationDate(expirationDate);
 		tokenSessionEntity.setSecurityToken(randomUUID);
 		tokenSessionEntity.setUserId(userId);
-		UserEntity userEntity = userDAO.findById(userId);
 		tokenSessionEntity.setPremium(userEntity.isPremium());
+		tokenSessionEntity.setAdmin(userEntity.isAdmin());
 		tokenDAO.insert(tokenSessionEntity);
 		return randomUUID;
 	}
@@ -77,22 +79,19 @@ public class TokenSessionBO {
 	private Date getMinutes(int minutes) {
 		long time = new Date().getTime();
 		time = time + (minutes * 60000);
-		Date date = new Date(time);
-		return date;
+		return new Date(time);
 	}
 
 	public LoginStatusVO login(String email, String password) {
 		LoginStatusVO loginStatusVO = new LoginStatusVO(0L, "", false);
 		if (email != null && !email.isEmpty() && password != null && !password.isEmpty()) {
 			UserEntity userEntity = userDAO.findByEmail(email);
-			if (userEntity != null) {
-				if (password.equals(userEntity.getPassword())) {
-					Long userId = userEntity.getId();
-					deleteByUserId(userId);
-					String randomUUID = createToken(userId);
-					loginStatusVO = new LoginStatusVO(userId, randomUUID, true);
-					return loginStatusVO;
-				}
+			if (userEntity != null && !userEntity.isBan() && password.equals(userEntity.getPassword())) {
+				Long userId = userEntity.getId();
+				deleteByUserId(userId);
+				String randomUUID = createToken(userId);
+				loginStatusVO = new LoginStatusVO(userId, randomUUID, true);
+				return loginStatusVO;
 			}
 		}
 		loginStatusVO.setDescription("LOGIN ERROR");
@@ -107,10 +106,8 @@ public class TokenSessionBO {
 	public void setActivePersonaId(String securityToken, Long personaId, Boolean isLogout) {
 		TokenSessionEntity tokenSessionEntity = tokenDAO.findById(securityToken);
 
-		if (!isLogout) {
-			if (!userDAO.findById(tokenSessionEntity.getUserId()).ownsPersona(personaId)) {
-				throw new NotAuthorizedException("Persona not owned by user");
-			}
+		if (!isLogout && !userDAO.findById(tokenSessionEntity.getUserId()).ownsPersona(personaId)) {
+			throw new NotAuthorizedException("Persona not owned by user");
 		}
 
 		tokenSessionEntity.setActivePersonaId(personaId);
@@ -136,6 +133,11 @@ public class TokenSessionBO {
 	public boolean isPremium(String securityToken) {
 		TokenSessionEntity tokenSessionEntity = tokenDAO.findById(securityToken);
 		return tokenSessionEntity.isPremium();
+	}
+
+	public boolean isAdmin(String securityToken) {
+		TokenSessionEntity tokenSessionEntity = tokenDAO.findById(securityToken);
+		return tokenSessionEntity.isAdmin();
 	}
 
 }

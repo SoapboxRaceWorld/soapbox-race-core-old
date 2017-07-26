@@ -36,6 +36,10 @@ public class UserEntity {
 
 	private boolean premium = false;
 
+	private boolean isAdmin = false;
+
+	private boolean isBan = false;
+
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -74,5 +78,21 @@ public class UserEntity {
 
 	public boolean ownsPersona(Long id) {
 		return this.listOfProfile.stream().anyMatch(p -> p.getPersonaId().equals(id));
+	}
+
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
+
+	public boolean isBan() {
+		return isBan;
+	}
+
+	public void setBan(boolean isBan) {
+		this.isBan = isBan;
 	}
 }

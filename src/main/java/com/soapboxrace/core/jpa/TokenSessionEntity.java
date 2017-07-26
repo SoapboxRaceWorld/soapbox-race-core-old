@@ -38,6 +38,8 @@ public class TokenSessionEntity {
 
 	private boolean premium = false;
 
+	private boolean isAdmin = false;
+
 	public String getSecurityToken() {
 		return securityToken;
 	}
@@ -92,6 +94,14 @@ public class TokenSessionEntity {
 
 	public void setPremium(boolean premium) {
 		this.premium = premium;
+	}
+
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
 	}
 
 }
