@@ -93,8 +93,12 @@ public class TokenSessionBO {
 				loginStatusVO = new LoginStatusVO(userId, randomUUID, true);
 				return loginStatusVO;
 			}
+			if(userEntity.isBan()) {
+				loginStatusVO.setDescription("BANNED ACCOUNT");
+			} else {
+				loginStatusVO.setDescription("LOGIN ERROR");
+			}
 		}
-		loginStatusVO.setDescription("LOGIN ERROR");
 		return loginStatusVO;
 	}
 
