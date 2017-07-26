@@ -84,21 +84,23 @@ public class TokenSessionBO {
 
 	public LoginStatusVO login(String email, String password) {
 		LoginStatusVO loginStatusVO = new LoginStatusVO(0L, "", false);
-		if (email != null && !email.isEmpty() && password != null && !password.isEmpty()) {
+		if(email != null && !email.isEmpty() && password != null && !password.isEmpty()) {
 			UserEntity userEntity = userDAO.findByEmail(email);
-			if (userEntity != null && !userEntity.isBan() && password.equals(userEntity.getPassword())) {
-				Long userId = userEntity.getId();
-				deleteByUserId(userId);
-				String randomUUID = createToken(userId);
-				loginStatusVO = new LoginStatusVO(userId, randomUUID, true);
-				return loginStatusVO;
-			}
-			if(userEntity.isBan()) {
-				loginStatusVO.setDescription("BANNED ACCOUNT");
-			} else {
-				loginStatusVO.setDescription("LOGIN ERROR");
+			if(userEntity != null)
+			{
+				if(userEntity.isBan()) {
+					loginStatusVO.setDescription("BANNED ACCOUNT");
+					return loginStatusVO;
+				} else if(password.equals(userEntity.getPassword())) {
+					Long userId = userEntity.getId();
+					deleteByUserId(userId);
+					String randomUUID = createToken(userId);
+					loginStatusVO = new LoginStatusVO(userId, randomUUID, true);
+					return loginStatusVO;
+				}
 			}
 		}
+		loginStatusVO.setDescription("LOGIN ERROR");
 		return loginStatusVO;
 	}
 
