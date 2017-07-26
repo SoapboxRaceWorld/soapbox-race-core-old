@@ -1,0 +1,50 @@
+{
+	"ModuleEvaluationResult": {
+		"ModuleSpecifier": "ANewWorld",
+		"Details": {
+			"DataMatch": {
+				"ExecutableHash": "true/false",
+				"ExecutableVersion": "true/false",
+				"gameplay-native-hash": "true/false",
+				"ANewWorldHash": "true/false",
+				"ScriptHookWorldHash": "true/false"
+			},
+			"DataActions": {
+				"TerminateOn": [
+					{
+						"Mismatch": "ExecutableHash"
+					},
+					{
+						"Mismatch": "ExecutableVersion"
+					}
+				],
+				"ActivateModules": [
+					{
+						"ModuleSpecifier": "UDCRCBypass"
+					},
+					{
+						"ModuleSpecifier": "UDPCryptFunctionBypass_OnRead"
+					},
+					{
+						"ModuleSpecifier": "UDPCryptFunctionBypass_OnSend"
+					},
+					{
+						"ModuleSpecifier": "XMPPCRCBypass"
+					},
+					{
+						"ModuleSpecifier": "Anticheat"
+					},
+					{
+						"ModuleSpecifier": "D3D9Menu"
+					},
+					{
+						"ModuleSpecifier": "NewSafehouses"
+					},
+					{
+						"ModuleSpecifier": "Anticheat"
+					}
+				]
+			}
+		}
+	}
+}

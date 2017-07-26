@@ -12,6 +12,8 @@ import javax.ws.rs.core.MediaType;
 
 import com.soapboxrace.core.api.util.Secured;
 import com.soapboxrace.jaxb.http.HardwareInfo;
+import com.soapboxrace.jaxb.module.ModuleEvaluation;
+import com.soapboxrace.jaxb.module.ModuleInformation;
 import com.soapboxrace.jaxb.util.UnmarshalXML;
 
 @Path("/Reporting")
@@ -74,4 +76,21 @@ public class Reporting {
 		System.out.println("empty PUT!!!");
 		return "";
 	}
+
+	@POST
+	@Path("/ModuleInformation")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ModuleEvaluation moduleInformation(InputStream is) {
+		ModuleEvaluation moduleEvaluation = new ModuleEvaluation();
+		return moduleEvaluation;
+	}
+
+	@GET
+	@Path("/ModuleInformationTest")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ModuleInformation moduleInformationTest() {
+		ModuleInformation moduleInformation = new ModuleInformation();
+		return moduleInformation;
+	}
+
 }

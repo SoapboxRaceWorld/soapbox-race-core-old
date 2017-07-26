@@ -1,0 +1,20 @@
+{
+	"ModuleInfo": {
+		"Name": "ANewWorld",
+		"Version": "1.0.0.0",
+		"NFSWorldInformation": {
+			"ExecutablePath": "D:\\_corsair\\NFSW\\Data\\nfsw.exe",
+			"ExecutablePath_CommandLine": "D:\\_corsair\\NFSW\\Data\\nfsw.exe",
+			"ExecutableVersion": "1.0.0.1613",
+			"CommandLine": "\"D:\\_corsair\\NFSW\\Data\\nfsw.exe\" EU http://127.0.0.1:64145/ a 1",
+			"InternalCheckResult": "true"
+		},
+		"Hashes": {
+			"Executable": "028d6d132c20b69f85119e31f2964f619fd95549bcb1abf901228a9c899ac932e1dbedd080aa0fa32d685412e04acd5d9176025b29dd3d7cb52bf9f890c6b35c",
+			"GameplayNative": "43fc383a54e39a7f65a5bc7c867d2dbdab76807c5ab16f20ee82a218db4b33646096b95b5607f323e8e833343c1e1a66f38ad45fd7561f28e9677246012d3cf2",
+			"LightFX": "b1358c634d327a373c3d4e4d9489df2d6422046c85e0341b393ffd0dce528c1184e225866d49c9d472b4a0130988e30e99d7ad8555a005837e70c18685e78842",
+			"ScriptHookWorld": "64d202b2263757b25d2ef831970ff866d3545dcf7b563fbd0b938931c276e102b7f28e07048b4fada8896877b20cce9f1742cacfe6933be3aeee92cdea47e6ae",
+			"ANewWorld": "0baa296d040801dfc434ce08a185ec165c9a97d1c6e711feae34d8face9019eb50b3e4a4e4fed1d74991d0520764c2cb1721ba4ae58ad6e48495d1427859dfa4"
+		}
+	}
+}
