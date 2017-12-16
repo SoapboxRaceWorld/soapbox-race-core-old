@@ -11,10 +11,9 @@ import com.soapboxrace.core.dao.ProductDAO;
 import com.soapboxrace.core.dao.VinylProductDAO;
 import com.soapboxrace.core.jpa.CarSlotEntity;
 import com.soapboxrace.core.jpa.PersonaEntity;
-import com.soapboxrace.jaxb.http.BasketItemTrans;
-import com.soapboxrace.jaxb.http.CommerceResultStatus;
-import com.soapboxrace.jaxb.http.CommerceSessionTrans;
-import com.soapboxrace.jaxb.http.OwnedCarTrans;
+import com.soapboxrace.core.jpa.ProductEntity;
+import com.soapboxrace.core.jpa.VinylProductEntity;
+import com.soapboxrace.jaxb.http.*;
 import com.soapboxrace.jaxb.util.MarshalXML;
 
 @Stateless
@@ -50,13 +49,43 @@ public class CommerceBO {
 			List<BasketItemTrans> listBasketItemTrans = commerceSessionTrans.getBasket().getItems().getBasketItemTrans();
 			if(!listBasketItemTrans.isEmpty()) { // if buy or install perf part
 				int maxBuyPrice = 0;
+				int requiredLevel = 0;
+				boolean canBuy = true;
+				
 				for(BasketItemTrans basketItemTrans : listBasketItemTrans) {
 					if(basketItemTrans.getProductId().contains("SRV-VINYL")) {
-						maxBuyPrice += (vinylProductDao.findByProductId(basketItemTrans.getProductId()).getPrice() * basketItemTrans.getQuantity());
+						final VinylProductEntity vinylProductEntity = vinylProductDao.findByProductId(basketItemTrans.getProductId());
+
+						if (vinylProductEntity.getLevel() > requiredLevel) {
+							requiredLevel = vinylProductEntity.getLevel();
+							
+							if (requiredLevel > personaEntity.getLevel()) {
+								canBuy = false;
+								break;
+							}
+						}
+						
+						maxBuyPrice += (vinylProductEntity.getPrice() * basketItemTrans.getQuantity());
 					} else {
-						maxBuyPrice += (productDao.findByProductId(basketItemTrans.getProductId()).getPrice() * basketItemTrans.getQuantity());
+						final ProductEntity productEntity = productDao.findByProductId(basketItemTrans.getProductId());
+						
+						if (productEntity.getLevel() > requiredLevel) {
+							requiredLevel = productEntity.getLevel();
+
+							if (requiredLevel > personaEntity.getLevel()) {
+								canBuy = false;
+								break;
+							}
+						}
+						
+						maxBuyPrice += (productEntity.getPrice() * basketItemTrans.getQuantity());
 					}
 				}
+				
+				if (!canBuy) {
+					return CommerceResultStatus.FAIL_INVALID_BASKET;
+				}
+				
 				if(maxBuyPrice > 0) {
 					if(personaEntity.getCash() < maxBuyPrice) {
 						return CommerceResultStatus.FAIL_INSUFFICIENT_FUNDS;

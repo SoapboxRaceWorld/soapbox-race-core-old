@@ -79,6 +79,8 @@ public class BasketBO {
 			return CommerceResultStatus.FAIL_INSUFFICIENT_CAR_SLOTS;
 		
 		ProductEntity productEntity = productDao.findByProductId(productId);
+		if (personaEntity.getLevel() < productEntity.getLevel())
+			return CommerceResultStatus.FAIL_PERSONA_NOT_RIGHT_LEVEL;
 		if(personaEntity.getCash() < productEntity.getPrice())
 			return CommerceResultStatus.FAIL_INSUFFICIENT_FUNDS;
 		

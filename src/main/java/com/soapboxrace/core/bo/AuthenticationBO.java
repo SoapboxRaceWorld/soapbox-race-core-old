@@ -18,12 +18,10 @@ public class AuthenticationBO
         return banDAO.findByUser(userEntity);
     }
 
-    public BanEntity checkNonUserBan(String hwid, String ip, String email)
+    public BanEntity checkNonUserBan(String ip, String email)
     {
         BanEntity banEntity;
-        if ((banEntity = banDAO.findByHWID(hwid)) != null)
-            return banEntity;
-        else if ((banEntity = banDAO.findByIp(ip)) != null)
+        if ((banEntity = banDAO.findByIp(ip)) != null)
             return banEntity;
         else if ((banEntity = banDAO.findByEmail(email)) != null)
             return banEntity;

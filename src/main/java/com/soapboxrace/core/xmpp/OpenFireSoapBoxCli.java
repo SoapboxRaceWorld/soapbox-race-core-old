@@ -4,10 +4,7 @@ import com.google.inject.Binder;
 import com.google.inject.Injector;
 import com.soapboxrace.core.bo.ParameterBO;
 import com.soapboxrace.core.inject.InjectorFactory;
-import com.soapboxrace.core.xmpp.onlineusers.ShardedOnlineUsersReporter;
 import com.soapboxrace.core.xmpp.onlineusers.StandardOnlineUsersReporter;
-import com.soapboxrace.core.xmpp.shard.CNCHandshake;
-import com.soapboxrace.core.xmpp.shard.ClientHandshake;
 import com.soapboxrace.core.xmpp.standard.Handshake;
 import com.soapboxrace.jaxb.util.MarshalXML;
 
@@ -33,11 +30,6 @@ public class OpenFireSoapBoxCli
     {
         Class<? extends OnlineUsersReporter> usersReporterClass;
 
-        if (parameterBO.isShardingEnabled())
-        {
-            System.out.println("[XMPP-DI] Using ShardedOnlineUsersReporter");
-            usersReporterClass = ShardedOnlineUsersReporter.class;
-        } else
         {
             System.out.println("[XMPP-DI] Using StandardOnlineUsersReporter");
             usersReporterClass = StandardOnlineUsersReporter.class; 
@@ -50,23 +42,9 @@ public class OpenFireSoapBoxCli
     {
         Class<? extends IHandshake> handshakeClass;
 
-        if (parameterBO.isShardingEnabled())
         {
-            // We have specific code for sharding
-            if (parameterBO.isShardingMaster())
-            {
-                System.out.println("[XMPP-DI] Using CNCHandshake");
-                handshakeClass = CNCHandshake.class; // Master shard handshake
-            } else
-            {
-                System.out.println("[XMPP-DI] Using ClientHandshake");
-                handshakeClass = ClientHandshake.class; // Client shard handshake
-            }
-        } else
-        {
-            // Normal handshake
             System.out.println("[XMPP-DI] Using (normal) Handshake");
-            handshakeClass = Handshake.class; // yes
+            handshakeClass = Handshake.class;
         }
 
         binder.bind(IHandshake.class).to(handshakeClass);

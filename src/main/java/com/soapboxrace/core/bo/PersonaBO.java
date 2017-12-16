@@ -62,7 +62,7 @@ public class PersonaBO {
 	public OwnedCarTrans getDefaultCar(Long personaId) {
 		CarSlotEntity carSlotEntity = getDefaultCarEntity(personaId);
 		if (carSlotEntity == null) {
-			return new OwnedCarTrans();
+			throw new IllegalStateException(String.format("Persona %d has no default car", personaId));
 		}
 		OwnedCarTrans ownedCarTrans = UnmarshalXML.unMarshal(carSlotEntity.getOwnedCarTrans(), OwnedCarTrans.class);
 		ownedCarTrans.setId(carSlotEntity.getId());

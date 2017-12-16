@@ -44,11 +44,6 @@ public class BanDAO extends BaseDAO<BanEntity>
         return findByTypeAndData(BanEntity.BanType.EMAIL_BAN, email);
     }
 
-    public BanEntity findByHWID(String hwid)
-    {
-        return findByTypeAndData(BanEntity.BanType.HWID_BAN, hwid);
-    }
-    
 //    public BanEntity findByIp(String ip)
 //    {
 //        TypedQuery<BanEntity> query = entityManager.createQuery("SELECT obj FROM BanEntity obj WHERE obj.type = :type AND obj.data = :ip", BanEntity.class);

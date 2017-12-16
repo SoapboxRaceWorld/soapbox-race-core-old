@@ -1,19 +1,18 @@
 package com.soapboxrace.core.bo;
 
-import java.util.Date;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.core.Context;
-
+import com.soapboxrace.core.api.util.RequestUtil;
 import com.soapboxrace.core.api.util.UUIDGen;
 import com.soapboxrace.core.dao.TokenSessionDAO;
 import com.soapboxrace.core.dao.UserDAO;
 import com.soapboxrace.core.jpa.TokenSessionEntity;
 import com.soapboxrace.core.jpa.UserEntity;
 import com.soapboxrace.jaxb.login.LoginStatusVO;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.NotAuthorizedException;
+import java.util.Date;
 
 @Stateless
 public class TokenSessionBO
@@ -92,8 +91,7 @@ public class TokenSessionBO
     {
         long time = new Date().getTime();
         time = time + (minutes * 60000);
-        Date date = new Date(time);
-        return date;
+        return new Date(time);
     }
 
     public LoginStatusVO login(String email, String password, HttpServletRequest httpRequest)
@@ -106,19 +104,8 @@ public class TokenSessionBO
             {
                 if (password.equals(userEntity.getPassword()))
                 {
-                    if (userEntity.getHwid() == null || userEntity.getHwid().trim().isEmpty()) {
-                        userEntity.setHwid(httpRequest.getHeader("X-HWID"));
-                        userDAO.update(userEntity);
-                    }
-
                     if (userEntity.getIpAddress() == null || userEntity.getIpAddress().trim().isEmpty()) {
-                        String forwardedFor;
-                        if ((forwardedFor = httpRequest.getHeader("X-Forwarded-For")) != null && parameterBO.useForwardedFor()) {
-                            userEntity.setIpAddress(parameterBO.googleLoadBalancing() ? forwardedFor.split(",")[0] : forwardedFor);
-                        } else {
-                            userEntity.setIpAddress(httpRequest.getRemoteAddr());
-                        }
-//                        userEntity.setIpAddress(httpRequest.getHea);
+                        userEntity.setIpAddress(RequestUtil.getIp(httpRequest));
                         userDAO.update(userEntity);
                     }
 

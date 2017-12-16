@@ -105,7 +105,6 @@ public class BanEntity
     {
         USER_BAN,
         IP_BAN,
-        HWID_BAN,
         EMAIL_BAN
     }
 }

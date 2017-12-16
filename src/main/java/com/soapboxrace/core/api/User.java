@@ -1,28 +1,22 @@
 package com.soapboxrace.core.api;
 
-import javax.ejb.EJB;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import com.soapboxrace.core.api.util.LaunchFilter;
+import com.soapboxrace.core.api.util.BanUtil;
 import com.soapboxrace.core.api.util.LauncherChecks;
 import com.soapboxrace.core.api.util.Secured;
 import com.soapboxrace.core.bo.AuthenticationBO;
-import com.soapboxrace.core.bo.InviteTicketBO;
 import com.soapboxrace.core.bo.TokenSessionBO;
 import com.soapboxrace.core.bo.UserBO;
 import com.soapboxrace.core.jpa.BanEntity;
 import com.soapboxrace.core.jpa.UserEntity;
 import com.soapboxrace.jaxb.http.UserInfo;
 import com.soapboxrace.jaxb.login.LoginStatusVO;
+
+import javax.ejb.EJB;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Path("User")
 public class User {
@@ -39,9 +33,6 @@ public class User {
 	@EJB
 	private TokenSessionBO tokenBO;
 
-	@EJB
-	private InviteTicketBO inviteTicketBO;
-
 	@POST
 	@Secured
 	@Path("GetPermanentSession")
@@ -54,7 +45,7 @@ public class User {
 		{
 			return Response
 					.status(Response.Status.UNAUTHORIZED)
-					.entity(new LaunchFilter.BanUtil(ban).invoke())
+					.entity(BanUtil.getLoginStatus(ban))
 					.build();
 		}
 		

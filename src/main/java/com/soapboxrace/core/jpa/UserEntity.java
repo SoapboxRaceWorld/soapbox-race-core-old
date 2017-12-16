@@ -31,9 +31,6 @@ public class UserEntity {
 	@Column(name = "PASSWORD", length = 50)
 	private String password;
 	
-	@Column(name = "HWID")
-	private String hwid;
-	
 	@Column(name = "IP_ADDRESS")
 	private String ipAddress;
 
@@ -72,16 +69,6 @@ public class UserEntity {
 
 	public List<PersonaEntity> getListOfProfile() {
 		return listOfProfile;
-	}
-
-	public String getHwid()
-	{
-		return hwid;
-	}
-
-	public void setHwid(String hwid)
-	{
-		this.hwid = hwid;
 	}
 
 	public String getIpAddress()

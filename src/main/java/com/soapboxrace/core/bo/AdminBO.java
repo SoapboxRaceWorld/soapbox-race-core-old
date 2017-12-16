@@ -1,10 +1,8 @@
 package com.soapboxrace.core.bo;
 
-import com.soapboxrace.core.api.util.LaunchFilter;
 import com.soapboxrace.core.api.util.MiscUtils;
 import com.soapboxrace.core.dao.BanDAO;
 import com.soapboxrace.core.dao.PersonaDAO;
-import com.soapboxrace.core.dao.UserDAO;
 import com.soapboxrace.core.jpa.BanEntity;
 import com.soapboxrace.core.jpa.PersonaEntity;
 import com.soapboxrace.core.jpa.UserEntity;
@@ -24,9 +22,6 @@ public class AdminBO
 
     @EJB
     private PersonaDAO personaDao;
-
-    @EJB
-    private UserDAO userDao;
 
     @EJB
     private BanDAO banDAO;
@@ -69,12 +64,6 @@ public class AdminBO
 
         switch (type.toUpperCase())
         {
-            case "HWID":
-                banEntity.setType(BanEntity.BanType.HWID_BAN);
-                banEntity.setData(userEntity.getHwid());
-                failReason = "This HWID is already banned.";
-                doBan = banDAO.findByHWID(userEntity.getHwid()) == null;
-                break;
             case "IP":
                 banEntity.setType(BanEntity.BanType.IP_BAN);
                 banEntity.setData(userEntity.getIpAddress());
@@ -113,20 +102,19 @@ public class AdminBO
 
     private static class CommandInfo
     {
-        public CommandInfo.CmdAction action;
-        public String type;
-        public String reason;
-        public LocalDateTime timeEnd;
+        CommandInfo.CmdAction action;
+        String type;
+        String reason;
+        LocalDateTime timeEnd;
 
         public enum CmdAction
         {
             KICK,
             BAN,
-            ALERT,
             UNKNOWN
         }
 
-        public static CommandInfo parse(String cmd)
+        static CommandInfo parse(String cmd)
         {
             cmd = cmd.replaceFirst("/", "");
 
@@ -186,29 +174,6 @@ public class AdminBO
             }
 
             return info;
-        }
-
-        @Override
-        public String toString()
-        {
-            String desc = action.name();
-
-            if (reason != null && !reason.isEmpty())
-            {
-                desc += "|" + reason;
-            }
-
-            if (timeEnd != null)
-            {
-                desc += "|" + LaunchFilter.banEndFormatter.format(timeEnd);
-            }
-
-            if (type != null && !type.isEmpty())
-            {
-                desc += "|" + type;
-            }
-
-            return desc;
         }
     }
 }
