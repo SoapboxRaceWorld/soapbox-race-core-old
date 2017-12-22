@@ -1,31 +1,16 @@
 package com.soapboxrace.core.bo;
 
-import java.util.List;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-
 import com.soapboxrace.core.bo.util.AccoladesFunc;
-import com.soapboxrace.core.dao.CarSlotDAO;
-import com.soapboxrace.core.dao.EventDAO;
-import com.soapboxrace.core.dao.EventDataDAO;
-import com.soapboxrace.core.dao.EventSessionDAO;
-import com.soapboxrace.core.dao.PersonaDAO;
-import com.soapboxrace.core.jpa.EventEntity;
-import com.soapboxrace.core.jpa.EventSessionEntity;
-import com.soapboxrace.core.jpa.PersonaEntity;
-import com.soapboxrace.core.jpa.CarSlotEntity;
-import com.soapboxrace.core.jpa.CardDecks;
-import com.soapboxrace.core.jpa.EventDataEntity;
+import com.soapboxrace.core.dao.*;
+import com.soapboxrace.core.jpa.*;
 import com.soapboxrace.core.xmpp.XmppEvent;
 import com.soapboxrace.jaxb.http.*;
 import com.soapboxrace.jaxb.util.MarshalXML;
-import com.soapboxrace.jaxb.xmpp.XMPP_DragEntrantResultType;
-import com.soapboxrace.jaxb.xmpp.XMPP_ResponseTypeDragEntrantResult;
-import com.soapboxrace.jaxb.xmpp.XMPP_ResponseTypeRouteEntrantResult;
-import com.soapboxrace.jaxb.xmpp.XMPP_ResponseTypeTeamEscapeEntrantResult;
-import com.soapboxrace.jaxb.xmpp.XMPP_RouteEntrantResultType;
-import com.soapboxrace.jaxb.xmpp.XMPP_TeamEscapeEntrantResultType;
+import com.soapboxrace.jaxb.xmpp.*;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import java.util.List;
 //import com.soapboxrace.xmpp.openfire.XmppEvent;
 
 @Stateless
@@ -91,8 +76,6 @@ public class EventBO extends AccoladesFunc {
 		
 		eventSessionDao.update(sessionEntity);
 
-		boolean legit = isLegit(activePersonaId, pursuitArbitrationPacket, sessionEntity);
-		
 		if(pursuitArbitrationPacket.getHacksDetected() > 0) {
 			sendReportFromServer(activePersonaId, (int)pursuitArbitrationPacket.getCarId(), pursuitArbitrationPacket.getHacksDetected());
 		}
@@ -119,7 +102,7 @@ public class EventBO extends AccoladesFunc {
 		eventDataDao.update(eventDataEntity);
 
 		PursuitEventResult pursuitEventResult = new PursuitEventResult();
-		pursuitEventResult.setAccolades(legit ? getPursuitAccolades(activePersonaId, pursuitArbitrationPacket, isBusted) : new Accolades());
+		pursuitEventResult.setAccolades(getPursuitAccolades(activePersonaId, pursuitArbitrationPacket, isBusted));
 		pursuitEventResult.setDurability(updateDamageCar(activePersonaId, pursuitArbitrationPacket.getCarId(), 0, pursuitArbitrationPacket.getEventDurationInMilliseconds()));
 		pursuitEventResult.setEventId(eventDataEntity.getEvent().getId());
 		pursuitEventResult.setEventSessionId(eventSessionId);
@@ -131,42 +114,11 @@ public class EventBO extends AccoladesFunc {
 		return pursuitEventResult;
 	}
 
-	private boolean isLegit(Long activePersonaId, ArbitrationPacket arbitrationPacket, EventSessionEntity sessionEntity)
-	{
-		int minimumTime = 0;
-		
-		if (arbitrationPacket instanceof PursuitArbitrationPacket)
-			minimumTime = parameterBO.getMinPursuitTime();
-		else if (arbitrationPacket instanceof RouteArbitrationPacket)
-			minimumTime = parameterBO.getMinRouteTime();
-		else if (arbitrationPacket instanceof TeamEscapeArbitrationPacket)
-			minimumTime = parameterBO.getMinTETime();
-		else if (arbitrationPacket instanceof DragArbitrationPacket)
-			minimumTime = parameterBO.getMinDragTime();
-		
-		final long timeDiff = sessionEntity.getEnded() - sessionEntity.getStarted();
-		boolean legit = timeDiff >= minimumTime;
-
-		if (!legit) {
-		    socialBo.sendReport(
-		            0L,
-                    activePersonaId, 
-                    3, 
-                    String.format("Abnormal event time: %d", timeDiff),
-                    (int) arbitrationPacket.getCarId(), 
-                    0, 
-                    0L);
-        }
-		return legit;
-	}
-
 	public RouteEventResult getRaceEnd(Long eventSessionId, Long activePersonaId, RouteArbitrationPacket routeArbitrationPacket) {
 		EventSessionEntity sessionEntity = eventSessionDao.findById(eventSessionId);
 		sessionEntity.setEnded(System.currentTimeMillis());
 
 		eventSessionDao.update(sessionEntity);
-
-		boolean legit = isLegit(activePersonaId, routeArbitrationPacket, sessionEntity);
 
 		if(routeArbitrationPacket.getHacksDetected() > 0) {
 			sendReportFromServer(activePersonaId, (int)routeArbitrationPacket.getCarId(), routeArbitrationPacket.getHacksDetected());
@@ -224,7 +176,7 @@ public class EventBO extends AccoladesFunc {
 		}
 		
 		RouteEventResult routeEventResult = new RouteEventResult();
-		routeEventResult.setAccolades(legit ? getRouteAccolades(activePersonaId, routeArbitrationPacket) : new Accolades());
+		routeEventResult.setAccolades(getRouteAccolades(activePersonaId, routeArbitrationPacket));
 		routeEventResult.setDurability(updateDamageCar(activePersonaId, routeArbitrationPacket.getCarId(), routeArbitrationPacket.getNumberOfCollisions(), routeArbitrationPacket.getEventDurationInMilliseconds()));
 		routeEventResult.setEntrants(arrayOfRouteEntrantResult);
 		routeEventResult.setEventId(eventDataEntity.getEvent().getId());
@@ -242,8 +194,6 @@ public class EventBO extends AccoladesFunc {
 
 		eventSessionDao.update(sessionEntity);
 
-		boolean legit = isLegit(activePersonaId, dragArbitrationPacket, sessionEntity);
-		
 		if(dragArbitrationPacket.getHacksDetected() > 0) {
 			sendReportFromServer(activePersonaId, (int)dragArbitrationPacket.getCarId(), dragArbitrationPacket.getHacksDetected());
 		}
@@ -297,7 +247,7 @@ public class EventBO extends AccoladesFunc {
 		}
 		
 		DragEventResult dragEventResult = new DragEventResult();
-		dragEventResult.setAccolades(legit ? getDragAccolades(activePersonaId, dragArbitrationPacket) : new Accolades());
+		dragEventResult.setAccolades(getDragAccolades(activePersonaId, dragArbitrationPacket));
 		dragEventResult.setDurability(updateDamageCar(activePersonaId, dragArbitrationPacket.getCarId(), dragArbitrationPacket.getNumberOfCollisions(), dragArbitrationPacket.getEventDurationInMilliseconds()));
 		dragEventResult.setEntrants(arrayOfDragEntrantResult);
 		dragEventResult.setEventId(eventDataEntity.getEvent().getId());
@@ -315,8 +265,6 @@ public class EventBO extends AccoladesFunc {
 
 		eventSessionDao.update(sessionEntity);
 
-		boolean legit = isLegit(activePersonaId, teamEscapeArbitrationPacket, sessionEntity);
-		
 		if(teamEscapeArbitrationPacket.getHacksDetected() > 0) {
 			sendReportFromServer(activePersonaId, (int)teamEscapeArbitrationPacket.getCarId(), teamEscapeArbitrationPacket.getHacksDetected());
 		}
@@ -378,7 +326,7 @@ public class EventBO extends AccoladesFunc {
 		}
 
 		TeamEscapeEventResult teamEscapeEventResult = new TeamEscapeEventResult();
-		teamEscapeEventResult.setAccolades(legit ? getTeamEscapeAccolades(activePersonaId, teamEscapeArbitrationPacket) : new Accolades());
+		teamEscapeEventResult.setAccolades(getTeamEscapeAccolades(activePersonaId, teamEscapeArbitrationPacket));
 		teamEscapeEventResult.setDurability(updateDamageCar(activePersonaId, teamEscapeArbitrationPacket.getCarId(), teamEscapeArbitrationPacket.getNumberOfCollisions(), teamEscapeArbitrationPacket.getEventDurationInMilliseconds()));
 		teamEscapeEventResult.setEntrants(arrayOfTeamEscapeEntrantResult);
 		teamEscapeEventResult.setEventId(eventDataEntity.getEvent().getId());
