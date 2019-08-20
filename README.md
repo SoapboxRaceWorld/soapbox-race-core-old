@@ -1,3 +1,5 @@
+# Go to https://github.com/ApexSBRW/soapbox-race-core for active development on the `dev` branch.
+---
 # soapbox-race-core
 
 standalone.xml need to have gzip, here an example
